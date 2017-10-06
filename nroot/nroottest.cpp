@@ -1,17 +1,10 @@
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
-/*
-Version 1.0
-
-Problems:
-
-1. If x = 0 and n > 1; returns a non-zero value that tends to 0 and g gets larger.
-2.
-
-*/
-
+ofstream out;
+int i = 0;
 
 //pwr - x raised to the b
 long double pwr(long double x, long double b)
@@ -28,7 +21,7 @@ long double pwr(long double x, long double b)
 	*	i.e. 2 multiplied by itself "4" times                         *
 	*2- The base case is when b == 0 (implied)                        *
 	*******************************************************************/
-	
+	i++;
 	if (b > 0)
 	{
 		return ((x)* pwr(x, b - 1));
@@ -43,13 +36,14 @@ long double pwr(long double x, long double b)
 	}
 }
 
-// nCr - n-choose-r represented in product notation
+// nCr - representation in product notation
 long double ncr(long double n, long double r)
 {
 	long double ans = 1;
 	// NOTE: k <= r - 1 as the limit also works
 	for (long double k = 0; k <= r; k++)
 	{
+		i++;
 		ans = ans * ((n + 1 - (r - k)) / (k + 1));
 	}
 	return (ans * ((r + 1) / (n + 1)));
@@ -61,6 +55,7 @@ long double binsrs(long double x, long double n, long double g)
 	long double s = 0;
 	for (long double b = 0; b <= g; b++)
 	{
+		i++;
 		s = s + ((ncr(n, b)) * (pwr(x, b)));
 	}
 	return (s);
@@ -72,32 +67,37 @@ long double nroot(long double x, long double n, long double g)
 	long double t1 = 1;
 	for (long double a = x + 1; a <= x + 2; a++)
 	{
+		i++;
 		t1 = t1 * binsrs(-(long double(1) / a), (long double(1) / n), g);
 	}
 	for (long double a = 0; a <= x; a++)
 	{
+		i++;
 		t1 = t1 / binsrs(-(long double(1) / (a + 2)), (long double(1) / n), g);
 	}
 	return (t1);
 }
 
-// main function
+
 int main()
 {
 start:
 
-	long double x;
-	long double n;
-	long double g;
+	out.open("vals.csv", ios::trunc);
+	long double l = 100;
 
-	cout << "Enter x: ";
-	cin >> x;
-	cout << "Enter n: ";
-	cin >> n;
-	cout << "Enter g: ";
-	cin >> g;
-	cout << x << "^(1/" << n << ") = " << nroot(x, n, g) << "\n" << endl;
+	for (long double x = 0; x <= l; x++)
+	{
+		for (long double g = 0; g <= l; g++)
+		{
+			nroot(x, 1, g);
+			cout << x << " " << g << " " << i << "\n" << endl;
+			out << x << ", " << g << ", " << i << endl;
+			i = 0;
+		}
+	}
 
-	goto start;
+	out.close();
+	system("pause");
 	return (0);
 }
