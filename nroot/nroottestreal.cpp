@@ -1,10 +1,11 @@
 #include <iostream>
-#include <sstream> 
+#include <fstream>
 
 using namespace std;
+ofstream out;
 
 /*
-Version 1.2
+Version 1.1
 
 Problems:
 
@@ -29,7 +30,7 @@ long double pwr(long double x, long double b)
 	*	i.e. 2 multiplied by itself "4" times                         *
 	*2- The base case is when b == 0 (implied)                        *
 	*******************************************************************/
-	
+
 	if (b > 0)
 	{
 		return ((x)* pwr(x, b - 1));
@@ -67,8 +68,8 @@ long double binsrs(long double x, long double n, long double g)
 	return (s);
 }
 
-// nth-root core arithmatic function
-long double ncore(long double x, long double n, long double g)
+// n-root
+long double nroot(long double x, long double n, long double g)
 {
 	long double t1 = 1;
 	for (long double a = x + 1; a <= x + 2; a++)
@@ -82,47 +83,27 @@ long double ncore(long double x, long double n, long double g)
 	return (t1);
 }
 
-// nth-root function
-long double nroot(long double x, long double n, long double g)
-{
-	stringstream ss;
-	ss << x - (long)x;
-	return (ncore((x * pwr(10, (ss.str().length() - 1))), n, g) / ncore(10, (n / (ss.str().length() - 1)), g));
-}
-
 // main function
 int main()
 {
+// NOTE: 0 < x < 1 INTERVAL HAS WEIRD BEHAVIOUR
 start:
+	long double x = 200;
+	long double n = 2;
+	long double g = 30;
+	long double c;
+	out.open("valsrt.csv", ios::trunc);
 
-	long double x;
-	long double n;
-	long double g;
+	while (x < 201)
+	{
+		x = x + 0.0001;
+		c = pwr(nroot((x), n, g), n);
+		cout << c << ", " << x << endl;
+		out << x << ", " << c << endl;
+	}
 
-	cout << "Enter x: ";
-	cin >> x;
-	cout << "Enter n: ";
-	cin >> n;
-	cout << "Enter g: ";
-	cin >> g;
-	cout << x << "^(1/" << n << ") = " << nroot(x, n, g) << "\n" << endl;
-
+	out.close();
+	system("pause");
 	goto start;
 	return (0);
 }
-
-
-/*
-Changelog:
-
-v1.2 (09.10.17)
-- Renamed "nroot()" in previous versions, to "ncore()".
-- Added new "nroot()" function that serves as an extension to real numbers (i.e. can now compute the n-th root of real numbers).
-
-v1.1 (06.10.17)
-- Added local power function; "pwr()", instead of using the built-in C++ "pow()" function.
-
-v1.0 (04.10.17)
-- Base version.
-
-*/
